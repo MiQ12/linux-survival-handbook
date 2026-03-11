@@ -15,14 +15,26 @@ SMB Shares mount at smb://192.168...../Share but this address is often not suppo
 
 Create .smbcredentials at home path
 
-sudo mount -t cifs //192.168....../Share /mnt/shareExample -o creentials=/home/username/.smbcredentials
+    sudo mount -t cifs //192.168....../Share /mnt/shareExample -o creentials=/home/username/.smbcredentials
 
 ## TrueNAS Scale
 
-Some users of TrueNAS Apps attempting to configure GPU allocation report the error Expected [uuid] to be set for GPU inslot [<some pci slot>] in [nvidia_gpu_selection]) (see (NAS-134152).Users experiencing this error should follow the steps below for a one-time fix that should not need to be repeated.Connect to a shell session and retrieve the UUID for each GPU with the command midclt call app.gpu_choices | jq.For each application that experiences the error, run midclt call -j app.update APP_NAME '{"values": {"resources": {"gpus": {"use_all_gpus": false, "nvidia_gpu_selection": {"PCI_SLOT": {"use_gpu": true, "uuid": "GPU_UUID"}}}}}}' Where:
+Some users of TrueNAS Apps attempting to configure GPU allocation report the error
 
-    APP_NAME is the name you entered in the application, for example, “plex”.
+    Expected [uuid] to be set for GPU inslot [<some pci slot>] in [nvidia_gpu_selection]) (see (NAS-134152).
+    
+Users experiencing this error should follow the steps below for a one-time fix that should not need to be repeated.Connect to a shell session and retrieve the UUID for each GPU with the command 
 
-    PCI_SLOT is the PCI slot identified in the error, for example “0000:2d:00.0”.
+    midclt call app.gpu_choices | jq
 
-    GPU_UUID is the UUID matching the PCI slot that you retrieved with the above command.
+For each application that experiences the error, run 
+
+    midclt call -j app.update APP_NAME '{"values": {"resources": {"gpus": {"use_all_gpus": false, "nvidia_gpu_selection": {"PCI_SLOT": {"use_gpu": true, "uuid": "GPU_UUID"}}}}}}' 
+    
+Where:
+
+APP_NAME is the name you entered in the application, for example, “plex”.
+
+PCI_SLOT is the PCI slot identified in the error, for example “0000:2d:00.0”.
+
+GPU_UUID is the UUID matching the PCI slot that you retrieved with the above command.
